@@ -71,3 +71,13 @@ sds sds_dup(sds s) {
 void sds_free(sds s) {
     if (s) free(sds_get_header(s));
 }
+int sds_cmp(sds a, sds b) {
+    size_t la = sds_len(a);
+    size_t lb = sds_len(b);
+    size_t min_len = la < lb ? la : lb;
+    int r = memcmp(a, b, min_len);
+    if (r != 0) return r;
+    if (la < lb) return -1;
+    if (la > lb) return  1;
+    return 0;
+}
