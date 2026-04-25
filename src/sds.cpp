@@ -59,3 +59,15 @@ sds sds_append(sds s, const char* bytes, size_t len) {
     s[needed]    = '\0';
     return s;
 }
+
+sds sds_append_str(sds s, const char* str) {
+    return sds_append(s, str, strlen(str));
+}
+
+sds sds_dup(sds s) {
+    return sds_new(s, sds_len(s));
+}
+
+void sds_free(sds s) {
+    if (s) free(sds_get_header(s));
+}
