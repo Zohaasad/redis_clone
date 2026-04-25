@@ -23,3 +23,14 @@ sds sds_new(const char* init, size_t len) {
     s[len] = '\0';
     return s;
 }
+sds sds_new_str(const char* init) {
+    size_t len = init ? strlen(init) : 0;
+    return sds_new(init, len);
+}
+
+sds sds_empty() {
+    return sds_new(nullptr, 0);
+}
+size_t sds_len(sds s) {
+    return sds_get_header(s)->len;
+}
