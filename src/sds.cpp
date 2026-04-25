@@ -34,3 +34,28 @@ sds sds_empty() {
 size_t sds_len(sds s) {
     return sds_get_header(s)->len;
 }
+
+size_t sds_cap(sds s) {
+    return sds_get_header(s)->cap;
+}
+
+sds sds_append(sds s, const char* bytes, size_t len) {
+    sds_header* h   = sds_get_header(s);
+    size_t      cur = h->len;
+    size_t      needed = cur + len;
+
+    if (needed > h->cap) {
+        size_t new_cap = h->cap * 2;
+        if (new_cap < needed) new_cap = needed;
+
+        h = (sds_header*)realloc(h, sizeof(sds_header) + new_cap + 1);
+        if (!h) throw bad_alloc();
+        h->cap = new_cap;
+        s = h->data;   
+    }
+
+    memcpy(s + cur, bytes, len);
+    h->len       = needed;
+    s[needed]    = '\0';
+    return s;
+}
