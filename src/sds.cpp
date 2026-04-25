@@ -13,3 +13,13 @@ static sds sds_alloc(size_t cap) {
     h->data[0] = '\0';
     return h->data;
 }
+
+sds sds_new(const char* init, size_t len) {
+    sds s = sds_alloc(len);
+    if (init && len > 0) {
+        memcpy(s, init, len);
+    }
+    sds_get_header(s)->len = len;
+    s[len] = '\0';
+    return s;
+}
