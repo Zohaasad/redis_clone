@@ -64,3 +64,22 @@ static void cmd_set(Client* c,vector<string>& args) {
     dict_set(g_dict, key.data(), key.size(), obj);
     reply_simple(c, "OK");
 }
+
+static void cmd_get(Client* c, vector<string>& args) {
+    if (args.size() < 2) {
+        reply_error(c, "wrong number of arguments for 'get'");
+        return;
+    }
+    const string& key = args[1];
+    Obj* obj = dict_get(g_dict, key.data(), key.size());
+
+    if (!obj) {
+        reply_null_bulk(c);
+        return;
+    }
+    if (obj->type != OBJ_STRING) {
+        reply_error(c, "WRONGTYPE Operation against a key holding the wrong kind of value");
+        return;
+    }
+    reply_bulk(c, obj->str, sds_len(obj->str));
+}
