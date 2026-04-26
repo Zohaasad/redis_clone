@@ -51,3 +51,16 @@ static void cmd_echo(Client* c, vector<string>& args) {
     }
     reply_bulk(c, args[1].data(), args[1].size());
 }
+static void cmd_set(Client* c,vector<string>& args) {
+    if (args.size() < 3) {
+        reply_error(c, "wrong number of arguments for 'set'");
+        return;
+    }
+    const string& key = args[1];
+    const string& val = args[2];
+
+    sds s   = sds_new(val.data(), val.size());
+    Obj* obj = new Obj(s);
+    dict_set(g_dict, key.data(), key.size(), obj);
+    reply_simple(c, "OK");
+}
