@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <cctype>
 #include <cstring>
+using namespace std;
 Dict* g_dict = nullptr;
 
 void commands_init() {
@@ -36,10 +37,17 @@ static void reply_bulk(Client* c, const char* data, size_t len) {
 static void reply_null_bulk(Client* c) {
     c->write_buf += "$-1\r\n";
 }
-static void cmd_ping(Client* c, std::vector<std::string>& args) {
+static void cmd_ping(Client* c, vector<string>& args) {
     if (args.size() == 1) {
         reply_simple(c, "PONG");
     } else {
         reply_bulk(c, args[1].data(), args[1].size());
     }
+}
+static void cmd_echo(Client* c, vector<string>& args) {
+    if (args.size() < 2) {
+        reply_error(c, "wrong number of arguments for 'echo'");
+        return;
+    }
+    reply_bulk(c, args[1].data(), args[1].size());
 }
