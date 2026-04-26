@@ -110,3 +110,7 @@ bool dict_del(Dict* d, const char* key, size_t klen) {
     }
     return false;
 }
+
+size_t dict_size(Dict* d) {
+    return d->count;
+}
