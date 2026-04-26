@@ -4,6 +4,20 @@
 #include "object.h"
 #include <cstddef>
 
+struct DictEntry {
+    sds        key;
+    Obj*       val;
+    DictEntry* next;  
+};
+
+struct Dict {
+    DictEntry** buckets;  
+    size_t      size;   
+    size_t      count;    
+
+    Dict();
+    ~Dict();
+};
 
 void   dict_set(Dict* d, const char* key, size_t klen, Obj* val);
 Obj*   dict_get(Dict* d, const char* key, size_t klen);
