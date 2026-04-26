@@ -51,3 +51,29 @@ static void dict_resize(Dict* d, size_t new_size) {
     d->buckets = new_buckets;
     d->size    = new_size;
 }
+
+void dict_set(Dict* d, const char* key, size_t klen, Obj* val) {
+
+    if ((double)d->count / d->size > DICT_LOAD_FACTOR) {
+        dict_resize(d, d->size * 2);
+    }
+
+    size_t     idx = dict_hash(key, klen) & (d->size - 1);
+    DictEntry* e   = d->buckets[idx];
+    while (e) {
+        if (sds_len(e->key) == klen && memcmp(e->key, key, klen) == 0) {
+
+            delete e->val;
+            e->val = val;
+            return;
+        }
+        e = e->next;
+    }
+
+    DictEntry* ne = (DictEntry*)malloc(sizeof(DictEntry));
+    ne->key       = sds_new(key, klen);
+    ne->val       = val;
+    ne->next      = d->buckets[idx];
+    d->buckets[idx] = ne;
+    d->count++;
+}
