@@ -1,11 +1,11 @@
 #pragma once
 
 #include <string>
-
+using namespace std;
 struct Client {
     int         fd;
-    std::string read_buf;
-    std::string write_buf;
+    string read_buf;
+    string write_buf;
     bool        closing;
 
     Client(int fd);

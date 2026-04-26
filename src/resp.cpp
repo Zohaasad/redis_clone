@@ -1,6 +1,7 @@
 #include "resp.h"
 #include <cstring>
 #include <cstdlib>
+using namespace std;
 
 static int find_crlf(const char* buf, size_t len) {
     for (size_t i = 0; i + 1 < len; i++) {
@@ -22,7 +23,7 @@ RespResult resp_parse(const char* buf, size_t buflen) {
          int crlf = find_crlf(buf, buflen);
         if (crlf < 0) return result;  
 
-        std::string line(buf, crlf);
+        string line(buf, crlf);
         size_t pos = 0;
         while (pos < line.size()) {
             while (pos < line.size() && line[pos] == ' ') pos++;
@@ -85,9 +86,9 @@ RespResult resp_parse(const char* buf, size_t buflen) {
         rem -= len_crlf + 2;
 
          
-        if (rem < (size_t)(slen + 2)) return result;   // incomplete
+        if (rem < (size_t)(slen + 2)) return result; 
 
-        result.args.push_back(std::string(p, slen));
+        result.args.push_back(string(p, slen));
 
         p   += slen + 2;  
         rem -= slen + 2;
@@ -99,31 +100,31 @@ RespResult resp_parse(const char* buf, size_t buflen) {
 }
 
 
-std::string resp_simple(const char* msg) {
-    return std::string("+") + msg + "\r\n";
+string resp_simple(const char* msg) {
+    return string("+") + msg + "\r\n";
 }
 
-std::string resp_error(const char* msg) {
-    return std::string("-ERR ") + msg + "\r\n";
+string resp_error(const char* msg) {
+    return string("-ERR ") + msg + "\r\n";
 }
 
-std::string resp_integer(long long n) {
-    return std::string(":") + std::to_string(n) + "\r\n";
+string resp_integer(long long n) {
+    return string(":") + std::to_string(n) + "\r\n";
 }
 
-std::string resp_bulk(const char* data, size_t len) {
-    std::string out = "$" + std::to_string(len) + "\r\n";
+string resp_bulk(const char* data, size_t len) {
+    string out = "$" + to_string(len) + "\r\n";
     out.append(data, len);
     out += "\r\n";
     return out;
 }
 
-std::string resp_null_bulk() {
+string resp_null_bulk() {
     return "$-1\r\n";
 }
 
-std::string resp_array(const std::vector<std::string>& items) {
-    std::string out = "*" + std::to_string(items.size()) + "\r\n";
+string resp_array(const vector<string>& items) {
+    string out = "*" + to_string(items.size()) + "\r\n";
     for (const auto& item : items) {
         out += resp_bulk(item.data(), item.size());
     }

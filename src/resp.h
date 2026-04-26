@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+using namespace std;
 
 
 enum class RespStatus {
@@ -12,16 +13,16 @@ enum class RespStatus {
 
 struct RespResult {
     RespStatus           status;
-    std::vector<std::string> args;    
+    vector<string> args;    
     size_t               consumed;   
 };
 
 
 RespResult resp_parse(const char* buf, size_t buflen);
 
-std::string resp_simple(const char* msg);
-std::string resp_error(const char* msg);
-std::string resp_integer(long long n);
-std::string resp_bulk(const char* data, size_t len);
-std::string resp_null_bulk();
-std::string resp_array(const std::vector<std::string>& items);
+string resp_simple(const char* msg);
+string resp_error(const char* msg);
+string resp_integer(long long n);
+string resp_bulk(const char* data, size_t len);
+string resp_null_bulk();
+string resp_array(const vector<string>& items);

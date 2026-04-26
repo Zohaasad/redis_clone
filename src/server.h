@@ -12,6 +12,8 @@
 #endif
 
 #include "client.h"
+using namespace std;
+
 
 #define MAX_EVENTS 128
 
@@ -20,7 +22,7 @@ struct Server {
     int  poll_fd;     
     int  port;
 
-    std::unordered_map<int, Client*> clients;
+    unordered_map<int, Client*> clients;
 
     Server() : listen_fd(-1), poll_fd(-1), port(6380) {}
     ~Server();

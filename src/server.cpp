@@ -2,7 +2,7 @@
 #include "client.h"
 #include "resp.h"
 #include "commands.h"
-
+using namespace std;
 #include <cstdio>
 #include <cstring>
 #include <cstdlib>
@@ -100,11 +100,6 @@ static int event_wait(Server* s, Event* events, int max) {
     return n;
 #endif
 }
-
-// ═════════════════════════════════════════════════════════════════════════════
-// Client management
-// ═════════════════════════════════════════════════════════════════════════════
-
 static void client_close(Server* s, int fd) {
     event_del(s, fd);
     auto it = s->clients.find(fd);
