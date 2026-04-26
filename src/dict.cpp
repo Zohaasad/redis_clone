@@ -114,3 +114,14 @@ bool dict_del(Dict* d, const char* key, size_t klen) {
 size_t dict_size(Dict* d) {
     return d->count;
 }
+
+void dict_each(Dict* d, bool (*fn)(const char* key, size_t klen, Obj* val, void* ud), void* ud) {
+    for (size_t i = 0; i < d->size; i++) {
+        DictEntry* e = d->buckets[i];
+        while (e) {
+            DictEntry* next = e->next;  
+            if (!fn(e->key, sds_len(e->key), e->val, ud)) return;
+            e = next;
+        }
+    }
+}
