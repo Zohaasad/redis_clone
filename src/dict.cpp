@@ -18,3 +18,18 @@ Dict::Dict() {
     count   = 0;
     buckets = (DictEntry**)calloc(size, sizeof(DictEntry*));
 }
+
+Dict::~Dict() {
+    for (size_t i = 0; i < size; i++) {
+        DictEntry* e = buckets[i];
+        while (e) {
+            DictEntry* next = e->next;
+            sds_free(e->key);
+          
+            delete e->val;
+            free(e);
+            e = next;
+        }
+    }
+    free(buckets);
+}
