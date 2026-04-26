@@ -77,3 +77,16 @@ void dict_set(Dict* d, const char* key, size_t klen, Obj* val) {
     d->buckets[idx] = ne;
     d->count++;
 }
+
+Obj* dict_get(Dict* d, const char* key, size_t klen) {
+    size_t     idx = dict_hash(key, klen) & (d->size - 1);
+    DictEntry* e   = d->buckets[idx];
+
+    while (e) {
+        if (sds_len(e->key) == klen && memcmp(e->key, key, klen) == 0) {
+            return e->val;
+        }
+        e = e->next;
+    }
+    return nullptr;
+}
