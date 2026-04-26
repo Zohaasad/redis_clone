@@ -6,3 +6,7 @@
 #include <cctype>
 #include <cstring>
 Dict* g_dict = nullptr;
+
+void commands_init() {
+    g_dict = new Dict();
+}
