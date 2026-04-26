@@ -33,3 +33,21 @@ Dict::~Dict() {
     }
     free(buckets);
 }
+
+
+void dict_resize(Dict* d, size_t new_size) {
+    DictEntry** new_buckets = (DictEntry**)calloc(new_size, sizeof(DictEntry*));
+    for (size_t i = 0; i < d->size; i++) {
+        DictEntry* e = d->buckets[i];
+        while (e) {
+            DictEntry* next    = e->next;
+            size_t     new_idx = dict_hash(e->key, sds_len(e->key)) & (new_size - 1);
+            e->next            = new_buckets[new_idx];
+            new_buckets[new_idx] = e;
+            e = next;
+        }
+    }
+    free(d->buckets);
+    d->buckets = new_buckets;
+    d->size    = new_size;
+}
