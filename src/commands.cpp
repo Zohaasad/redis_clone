@@ -21,3 +21,8 @@ static void reply_error(Client* c, const char* msg) {
     c->write_buf += msg;
     c->write_buf += "\r\n";
 }
+static void reply_integer(Client* c, long long n) {
+    c->write_buf += ":";
+    c->write_buf += std::to_string(n);
+    c->write_buf += "\r\n";
+}
