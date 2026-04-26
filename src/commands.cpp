@@ -33,3 +33,6 @@ static void reply_bulk(Client* c, const char* data, size_t len) {
     c->write_buf.append(data, len);
     c->write_buf += "\r\n";
 }
+static void reply_null_bulk(Client* c) {
+    c->write_buf += "$-1\r\n";
+}
