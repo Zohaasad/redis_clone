@@ -36,3 +36,10 @@ static void reply_bulk(Client* c, const char* data, size_t len) {
 static void reply_null_bulk(Client* c) {
     c->write_buf += "$-1\r\n";
 }
+static void cmd_ping(Client* c, std::vector<std::string>& args) {
+    if (args.size() == 1) {
+        reply_simple(c, "PONG");
+    } else {
+        reply_bulk(c, args[1].data(), args[1].size());
+    }
+}
