@@ -12,3 +12,9 @@ static size_t dict_hash(const char* key, size_t klen) {
     }
     return hash;
 }
+
+Dict::Dict() {
+    size    = DICT_INITIAL_SIZE;
+    count   = 0;
+    buckets = (DictEntry**)calloc(size, sizeof(DictEntry*));
+}
