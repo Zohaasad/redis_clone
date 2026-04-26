@@ -11,7 +11,7 @@ void commands_init() {
     g_dict = new Dict();
 }
 
-void reply_simple(Client* c, const char* msg) {
+static void reply_simple(Client* c, const char* msg) {
     c->write_buf += "+";
     c->write_buf += msg;
     c->write_buf += "\r\n";
