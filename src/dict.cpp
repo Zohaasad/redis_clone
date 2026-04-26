@@ -35,7 +35,7 @@ Dict::~Dict() {
 }
 
 
-void dict_resize(Dict* d, size_t new_size) {
+static void dict_resize(Dict* d, size_t new_size) {
     DictEntry** new_buckets = (DictEntry**)calloc(new_size, sizeof(DictEntry*));
     for (size_t i = 0; i < d->size; i++) {
         DictEntry* e = d->buckets[i];
