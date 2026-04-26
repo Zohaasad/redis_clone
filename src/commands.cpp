@@ -16,3 +16,8 @@ static void reply_simple(Client* c, const char* msg) {
     c->write_buf += msg;
     c->write_buf += "\r\n";
 }
+static void reply_error(Client* c, const char* msg) {
+    c->write_buf += "-ERR ";
+    c->write_buf += msg;
+    c->write_buf += "\r\n";
+}
