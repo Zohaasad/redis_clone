@@ -26,3 +26,10 @@ static void reply_integer(Client* c, long long n) {
     c->write_buf += std::to_string(n);
     c->write_buf += "\r\n";
 }
+static void reply_bulk(Client* c, const char* data, size_t len) {
+    c->write_buf += "$";
+    c->write_buf += std::to_string(len);
+    c->write_buf += "\r\n";
+    c->write_buf.append(data, len);
+    c->write_buf += "\r\n";
+}
