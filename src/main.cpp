@@ -12,7 +12,7 @@ static void print_usage(const char* prog) {
 int main(int argc, char* argv[]) {
     int port = 6380;
 
-    // parse arguments
+    
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "--port") == 0 && i + 1 < argc) {
             port = atoi(argv[++i]);
@@ -22,16 +22,15 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    // initialise the global dictionary (Person B's code)
+    
     commands_init();
 
-    // initialise and run the server
+    
     Server s;
     if (!server_init(&s, port)) {
         fprintf(stderr, "[minired] failed to start\n");
         return 1;
     }
 
-    server_run(&s);   // blocks forever
-    return 0;
+    server_run(&s);   
 }
