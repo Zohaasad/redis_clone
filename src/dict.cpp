@@ -90,3 +90,23 @@ Obj* dict_get(Dict* d, const char* key, size_t klen) {
     }
     return nullptr;
 }
+
+bool dict_del(Dict* d, const char* key, size_t klen) {
+    size_t      idx  = dict_hash(key, klen) & (d->size - 1);
+    DictEntry** prev = &d->buckets[idx];
+    DictEntry*  e    = d->buckets[idx];
+
+    while (e) {
+        if (sds_len(e->key) == klen && memcmp(e->key, key, klen) == 0) {
+            *prev = e->next;        
+            sds_free(e->key);
+            delete e->val;
+            free(e);
+            d->count--;
+            return true;
+        }
+        prev = &e->next;
+        e    = e->next;
+    }
+    return false;
+}
