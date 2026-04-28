@@ -268,16 +268,15 @@ void server_run(Server* s) {
         }
     }
 }
-
 void server_stop(Server* s) {
     for (auto& [fd, client] : s->clients) {
         delete client;
         close(fd);
     }
     s->clients.clear();
-    if (s->listen_fd >= 0){close(s->listen_fd);
+    if (s->listen_fd >= 0) close(s->listen_fd);
     if (s->poll_fd   >= 0) close(s->poll_fd);
-}
+}                        
 
 Server::~Server() {
     server_stop(this);
