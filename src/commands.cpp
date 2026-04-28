@@ -83,3 +83,74 @@ static void cmd_get(Client* c, vector<string>& args) {
     }
     reply_bulk(c, obj->str, sds_len(obj->str));
 }
+
+static void cmd_del(Client* c, vector<string>& args) {
+    if (args.size() < 2) {
+        reply_error(c, "wrong number of arguments for 'del'");
+        return;
+    }
+    long long count = 0;
+    for (size_t i = 1; i < args.size(); i++) {
+        if (dict_del(g_dict, args[i].data(), args[i].size())) {
+            count++;
+        }
+    }
+    reply_integer(c, count);
+}
+static void cmd_exists(Client* c, vector<string>& args) {
+    if (args.size() < 2) {
+        reply_error(c, "wrong number of arguments for 'exists'");
+        return;
+    }
+    long long count = 0;
+    for (size_t i = 1; i < args.size(); i++) {
+        if (dict_get(g_dict, args[i].data(), args[i].size())) {
+            count++;
+        }
+    }
+    reply_integer(c, count);
+}
+
+static void cmd_dbsize(Client* c,vector<string>& args) {
+    (void)args;
+    reply_integer(c, (long long)dict_size(g_dict));
+}
+
+static void cmd_quit(Client* c, vector<string>& args) {
+    (void)args;
+    reply_simple(c, "OK");
+    c->closing = true;  
+}
+struct Command {
+    const char* name;
+    void (*handler)(Client*, std::vector<std::string>&);
+};
+
+static Command command_table[] = {
+    { "ping",   cmd_ping   },
+    { "echo",   cmd_echo   },
+    { "set",    cmd_set    },
+    { "get",    cmd_get    },
+    { "del",    cmd_del    },
+    { "exists", cmd_exists },
+    { "dbsize", cmd_dbsize },
+    { "quit",   cmd_quit   },
+    { nullptr,  nullptr    } 
+};
+
+void dispatch_command(Client* client, vector<string>& args) {
+    if (args.empty()) return;
+
+    string name = args[0];
+    for (char& ch : name) ch = (char)tolower((unsigned char)ch);
+
+    for (int i = 0; command_table[i].name; i++) {
+        if (name == command_table[i].name) {
+            command_table[i].handler(client, args);
+            return;
+        }
+    }
+    client->write_buf += "-ERR unknown command '";
+    client->write_buf += name;
+    client->write_buf += "'\r\n";
+}
