@@ -6,12 +6,19 @@
 #include "htable.h"
 #include "zset.h"
 #include "expiry.h"
+#include "rdb.h"
+#include <unistd.h>
+#include <sys/wait.h>
+#include <sys/types.h>
 #include <algorithm>
 #include <cctype>
 #include <cstring>
 #include <cstdio>
 #include <string>
 #include <vector>
+
+
+
 
 Dict* g_dict = nullptr;
 
@@ -556,6 +563,32 @@ struct Command {
     void (*handler)(Client*, std::vector<std::string>&);
 };
 
+
+static void cmd_save(Client* c, std::vector<std::string>& args) {
+    (void)args;
+    bool ok = rdb_save(g_dict, g_rdb_path);
+    if (ok)
+        reply_simple(c, "OK");
+    else
+        reply_error(c, "snapshot failed");
+}
+
+
+static void cmd_bgsave(Client* c, std::vector<std::string>& args) {
+    (void)args;
+    pid_t pid = fork();
+    if (pid < 0) {
+        reply_error(c, "fork failed");
+        return;
+    }
+    if (pid == 0) {
+  
+        bool ok = rdb_save(g_dict, g_rdb_path);
+        exit(ok ? 0 : 1);
+    }
+   
+    reply_simple(c, "Background saving started");
+}
 static Command command_table[] = {
 
     { "ping",    cmd_ping    },
@@ -606,7 +639,10 @@ static Command command_table[] = {
     { "zrank",   cmd_zrank   },
     { "zcard",   cmd_zcard   },
     { "zrem",    cmd_zrem    },
-    { nullptr,   nullptr     }
+   
+    { "save",    cmd_save    },
+    { "bgsave",  cmd_bgsave  },
+     { nullptr,   nullptr     },
 };
 
 void dispatch_command(Client* client, std::vector<std::string>& args) {

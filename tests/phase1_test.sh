@@ -1,4 +1,4 @@
-#!/bin/bash
+
 PORT=6380
 CLI="redis-cli -p $PORT"
 PASS=0
