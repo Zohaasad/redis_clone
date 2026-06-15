@@ -19,7 +19,6 @@
 
 
 
-
 Dict* g_dict = nullptr;
 
 void commands_init() {
@@ -54,7 +53,7 @@ static void cmd_echo(Client* c, std::vector<std::string>& args) {
     if (args.size() < 2) { reply_error(c, "wrong number of arguments for 'echo'"); return; }
     reply_bulk(c, args[1].data(), args[1].size());
 }
-
+//person b start
 static void cmd_set(Client* c, std::vector<std::string>& args) {
     if (args.size() < 3) { reply_error(c, "wrong number of arguments for 'set'"); return; }
     sds s    = sds_new(args[2].data(), args[2].size());
@@ -89,7 +88,7 @@ static void cmd_exists(Client* c, std::vector<std::string>& args) {
     }
     reply_integer(c, count);
 }
-
+//person b end
 static void cmd_dbsize(Client* c, std::vector<std::string>& args) {
     (void)args;
     reply_integer(c, (long long)dict_size(g_dict));
@@ -200,7 +199,7 @@ static void cmd_keys(Client* c, std::vector<std::string>& args) {
     for (auto& k : ctx.matches) reply_bulk(c, k.data(), k.size());
 }
 
-
+//person b starts 
 static void cmd_setnx(Client* c, std::vector<std::string>& args) {
     if (args.size() < 3) { reply_error(c, "wrong number of arguments for 'setnx'"); return; }
     check_expiry(g_dict, args[1].data(), args[1].size());
@@ -269,7 +268,7 @@ static void cmd_decrby(Client* c, std::vector<std::string>& args) {
     if (args.size() < 3) { reply_error(c, "wrong number of arguments for 'decrby'"); return; }
     do_incr(c, args[1], -std::stoll(args[2]));
 }
-
+//person b ends 
 
 static List* get_or_create_list(const std::string& key) {
     check_expiry(g_dict, key.data(), key.size());
@@ -358,7 +357,7 @@ static void cmd_lindex(Client* c, std::vector<std::string>& args) {
     if (!val) reply_null_bulk(c);
     else      reply_bulk(c, val, sds_len(val));
 }
-
+//person b start
 static HTable* get_or_create_hash(const std::string& key) {
     check_expiry(g_dict, key.data(), key.size());
     Obj* obj = dict_get(g_dict, key.data(), key.size());
@@ -588,7 +587,7 @@ static void cmd_bgsave(Client* c, std::vector<std::string>& args) {
     }
    
     reply_simple(c, "Background saving started");
-}
+} // PERSON  b stop 
 static Command command_table[] = {
 
     { "ping",    cmd_ping    },
@@ -659,3 +658,208 @@ void dispatch_command(Client* client, std::vector<std::string>& args) {
     client->write_buf += name;
     client->write_buf += "'\r\n";
 }
+
+
+
+
+
+
+/*
+# Connection/Server
+PING
+ECHO "hello"
+DBSIZE
+FLUSHDB
+SELECT 0
+QUIT
+
+# Generic Key
+TYPE mykey
+EXPIRE mykey 100
+TTL mykey
+PERSIST mykey
+KEYS *
+
+# List
+RPUSH mylist "a" "b" "c"
+LPUSH mylist "z"
+LLEN mylist
+LRANGE mylist 0 -1
+LINDEX mylist 0
+LPOP mylist
+RPOP mylist
+
+# Persistence
+SAVE
+BGSAVE
+
+
+# String
+SET name "Ali"
+GET name
+DEL name
+EXISTS name
+SETNX name "Sara"
+APPEND name " Khan"
+STRLEN name
+INCR counter
+INCRBY counter 10
+DECR counter
+DECRBY counter 5
+
+# Hash
+HSET user:1 name "Ali" age "25" city "Lahore"
+HGET user:1 name
+HDEL user:1 city
+HEXISTS user:1 name
+HLEN user:1
+HKEYS user:1
+HVALS user:1
+HGETALL user:1
+
+# Sorted Set
+ZADD leaderboard 100 "Ali"
+ZADD leaderboard 85 "Sara"
+ZADD leaderboard 92 "Bilal"
+ZSCORE leaderboard "Ali"
+ZRANK leaderboard "Ali"
+ZRANGE leaderboard 0 -1
+ZRANGE leaderboard 0 -1 WITHSCORES
+ZCARD leaderboard
+ZREM leaderboard "Ali"
+
+
+run from start :
+
+# Start fresh
+FLUSHDB
+
+# Person A tests
+PING
+ECHO "hello"
+DBSIZE
+SELECT 0
+TYPE nonexistent
+
+# List tests
+RPUSH mylist "a" "b" "c"
+LPUSH mylist "z"
+LLEN mylist
+LRANGE mylist 0 -1
+LINDEX mylist 0
+LPOP mylist
+RPOP mylist
+LRANGE mylist 0 -1
+
+# Expiry tests
+SET tempkey "hello"
+EXPIRE tempkey 100
+TTL tempkey
+PERSIST tempkey
+TTL tempkey
+
+# Person B string tests
+SET name "Ali"
+GET name
+SETNX name "Sara"
+GET name
+SETNX newname "Sara"
+GET newname
+APPEND name " Khan"
+GET name
+STRLEN name
+SET counter 0
+INCR counter
+INCRBY counter 10
+DECR counter
+DECRBY counter 5
+GET counter
+
+# Person B hash tests
+HSET user:1 name "Ali" age "25" city "Lahore"
+HGET user:1 name
+HGET user:1 age
+HEXISTS user:1 name
+HEXISTS user:1 fake
+HLEN user:1
+HKEYS user:1
+HVALS user:1
+HGETALL user:1
+HDEL user:1 city
+HGETALL user:1
+
+# Person B sorted set tests
+ZADD leaderboard 100 "Ali"
+ZADD leaderboard 85 "Sara"
+ZADD leaderboard 92 "Bilal"
+ZADD leaderboard 78 "Hira"
+ZCARD leaderboard
+ZSCORE leaderboard "Ali"
+ZRANK leaderboard "Ali"
+ZRANGE leaderboard 0 -1
+ZRANGE leaderboard 0 -1 WITHSCORES
+ZREM leaderboard "Hira"
+ZRANGE leaderboard 0 -1 WITHSCORES
+ZCARD leaderboard
+
+# Keys and type
+KEYS *
+TYPE name
+TYPE mylist
+TYPE user:1
+TYPE leaderboard
+
+# Persistence
+DBSIZE
+SAVE
+
+
+
+for server :
+./minired --port 6380 --data ./dump.rdb
+
+for the other terminal:
+redis-cli -p 6380
+
+
+verify everything loaded :
+# Check total keys
+DBSIZE
+
+# Check strings
+GET name
+GET newname
+GET counter
+
+# Check list
+LRANGE mylist 0 -1
+
+# Check hash
+HGETALL user:1
+
+# Check sorted set
+ZRANGE leaderboard 0 -1 WITHSCORES
+
+# Check types
+TYPE name
+TYPE mylist
+TYPE user:1
+TYPE leaderboard
+
+# Check expiry survived
+TTL tempkey
+
+
+
+
+# Set a key with short expiry
+SET testkey "hello"
+EXPIRE testkey 5
+TTL testkey
+
+# Check if sweep deleted it automatically
+TTL testkey
+GET testkey
+*/
+
+

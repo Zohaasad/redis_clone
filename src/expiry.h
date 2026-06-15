@@ -6,3 +6,5 @@
 
 int64_t now_ms();
 bool check_expiry(Dict* d, const char* key, size_t klen);
+void start_expiry_sweep(Dict** dict_ptr);
+void stop_expiry_sweep();

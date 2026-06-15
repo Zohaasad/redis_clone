@@ -60,7 +60,8 @@ bool sl_insert(SkipList* sl, const char* member, size_t mlen, double score) {
     while (cur) {
         if (strcmp(cur->member, member) == 0) {
          
-            sl_delete(sl, member, mlen);
+         double old_score = cur->score;
+         sl_delete(sl, member, mlen, old_score);
            
             x = sl->header;
             for (int i = sl->level - 1; i >= 0; i--) {
@@ -93,16 +94,15 @@ bool sl_insert(SkipList* sl, const char* member, size_t mlen, double score) {
     sl->length++;
     return true;
 }
-
-bool sl_delete(SkipList* sl, const char* member, size_t ) {
+bool sl_delete(SkipList* sl, const char* member, size_t mlen, double score) {
     SkipListNode* update[SKIPLIST_MAX_LEVEL];
     SkipListNode* x = sl->header;
 
-  
     for (int i = sl->level - 1; i >= 0; i--) {
         while (x->forward[i] &&
-               (x->forward[i]->score < 1e300) &&
-               strcmp(x->forward[i]->member, member) < 0) {
+               (x->forward[i]->score < score ||
+               (x->forward[i]->score == score &&
+                strcmp(x->forward[i]->member, member) < 0))) {
             x = x->forward[i];
         }
         update[i] = x;

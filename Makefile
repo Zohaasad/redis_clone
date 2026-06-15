@@ -1,5 +1,5 @@
 CXX      = clang++
-CXXFLAGS = -std=c++17 -Wall -Wextra -O2 -g
+CXXFLAGS = -std=c++17 -Wall -Wextra -O2 -g -pthread
 
 SRC = src/main.cpp \
       src/server.cpp \
@@ -40,8 +40,11 @@ test_rdb: tests/test_rdb.cpp src/rdb.cpp src/sds.cpp src/dict.cpp \
 	       src/dict.cpp src/list.cpp src/htable.cpp src/skiplist.cpp \
 	       src/zset.cpp src/expiry.cpp
 	./test_rdb
-
+test_persistence:
+	chmod +x tests/persistence_test.sh
+	./tests/persistence_test.sh
+	
 clean:
 	rm -f minired test_sds test_resp test_list test_skiplist test_rdb
 
-.PHONY: clean test_sds test_resp test_list test_skiplist test_rdb
+.PHONY: clean test_sds test_resp test_list test_skiplist test_rdb test_persistence

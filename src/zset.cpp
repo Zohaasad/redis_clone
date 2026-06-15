@@ -34,7 +34,7 @@ bool zset_add(ZSet* z, const char* member, size_t mlen, double score) {
     double old_score;
     if (ht_get_score(z->ht, member, mlen, &old_score)) {
        
-        sl_delete(z->sl, member, mlen);
+        sl_delete(z->sl, member, mlen, old_score);
     }
     sl_insert(z->sl, member, mlen, score);
     ht_set_score(z->ht, member, mlen, score);
@@ -42,8 +42,9 @@ bool zset_add(ZSet* z, const char* member, size_t mlen, double score) {
 }
 
 bool zset_rem(ZSet* z, const char* member, size_t mlen) {
-    if (!dict_get(z->ht, member, mlen)) return false;
-    sl_delete(z->sl, member, mlen);
+    double score;
+    if (!ht_get_score(z->ht, member, mlen, &score)) return false;
+    sl_delete(z->sl, member, mlen, score);
     dict_del(z->ht, member, mlen);
     return true;
 }

@@ -56,10 +56,11 @@ void test_delete() {
     sl_insert(sl, "Bilal", 5, 85.0);
     sl_insert(sl, "Hira",  4, 92.0);
 
-    CHECK(sl_delete(sl, "Bilal", 5),  "delete Bilal returns true");
+   CHECK(sl_delete(sl, "Bilal", 5, 85.0),  "delete Bilal returns true");
     CHECK(sl_length(sl) == 2,         "length is 2 after delete");
     CHECK(sl_get_rank(sl, "Hira", 4) == 0, "Hira rank is now 0");
-    CHECK(!sl_delete(sl, "Bilal", 5), "delete again returns false");
+    CHECK(!sl_delete(sl, "Bilal", 5, 85.0), "delete again returns false");
+
     delete sl;
 }
 

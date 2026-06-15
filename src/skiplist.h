@@ -28,7 +28,7 @@ struct SkipList {
 };
 
 bool   sl_insert(SkipList* sl, const char* member, size_t mlen, double score);
-bool   sl_delete(SkipList* sl, const char* member, size_t mlen);
+bool sl_delete(SkipList* sl, const char* member, size_t mlen, double score);
 bool   sl_get_score(SkipList* sl, const char* member, size_t mlen, double* score);
 long   sl_get_rank(SkipList* sl, const char* member, size_t mlen);
 
