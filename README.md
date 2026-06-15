@@ -2,8 +2,8 @@
 
 **Course:** Advanced Database Management — Computer Science, 4th Semester  
 **Project:** Project 02 — In-Memory Cache Server (Redis Clone)  
-**Group:** [Your Group Number]  
-**Members:** [Member 1 Name] — [Member 2 Name]  
+**Group:** 15 
+**Members:** Fizzah Amir — Zoha Asad
 **Language:** C++17  
 **Platform:** macOS (kqueue) and Linux (epoll)
 
